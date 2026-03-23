@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "forgekits"
+version = "0.1.0"
+description = "AI-powered POC scaffolder — senior-level Python projects from a single prompt"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "aegusten" }]
+keywords = ["ai", "scaffolding", "fastapi", "agent", "poc"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Code Generators",
+]
+
+dependencies = [
+    "typer>=0.15.0",
+    "rich>=13.0.0",
+    "anthropic>=0.42.0",
+    "pyyaml>=6.0",
+    "python-frontmatter>=1.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8.0",
+]
+
+[project.scripts]
+forgekits = "forgekits.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/forgekits"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "TCH"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

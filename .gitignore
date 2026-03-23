@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Environment
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ForgeKits output (generated projects)
+output/*/
+!output/.gitkeep
+
+# User workspace specs (private)
+workspace/*.md
+!workspace/README.md
+!workspace/.gitkeep
