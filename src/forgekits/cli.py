@@ -6,9 +6,14 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from dotenv import load_dotenv
 from rich.console import Console
 from rich.prompt import Prompt, Confirm
 
+# Load .env from the forgekits project root (if present)
+load_dotenv(Path(__file__).resolve().parent.parent.parent.parent / ".env")
+
+from forgekits.adapters.registry import resolve_provider
 from forgekits.models import TaskSpec
 from forgekits.orchestrator import Orchestrator
 
@@ -73,7 +78,7 @@ def main(
         None, "--model", "-m", help="Override model selection (e.g. 'sonnet', 'opus')"
     ),
     provider: Optional[str] = typer.Option(
-        "anthropic", "--provider", "-p", help="LLM provider to use"
+        None, "--provider", "-p", help="LLM provider to use (auto-detected if omitted)"
     ),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Show detailed output"),
 ) -> None:
@@ -98,9 +103,14 @@ def main(
     console.print(f"\n[bold green]Forging:[/bold green] {spec.description}")
     console.print(f"[dim]Output → {output}[/dim]\n")
 
+    # Auto-detect provider: ANTHROPIC_API_KEY → anthropic, else → claudecode
+    resolved_provider = resolve_provider(provider)
+    if verbose:
+        console.print(f"[dim]Provider: {resolved_provider}[/dim]")
+
     # Hand off to the orchestrator (Layer 2)
     orchestrator = Orchestrator(
-        provider_name=provider,
+        provider_name=resolved_provider,
         model_override=model,
         verbose=verbose,
     )

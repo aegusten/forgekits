@@ -29,11 +29,34 @@ def get_adapter(provider: str, model: str, **kwargs: Any) -> LLMAdapter:
     return _ADAPTERS[provider](model=model, **kwargs)
 
 
+def resolve_provider(requested: str | None) -> str:
+    """Return the provider to use, auto-detecting when not specified.
+
+    Priority:
+    1. Explicitly requested provider (--provider flag)
+    2. ANTHROPIC_API_KEY in env → 'anthropic'
+    3. Fallback → 'claudecode' (uses local claude CLI)
+    """
+    # Explicit provider always wins
+    if requested is not None:
+        return requested
+
+    import os
+
+    # Auto-detect: prefer anthropic if key is available, else use claudecode
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return "anthropic"
+
+    return "claudecode"
+
+
 def _register_defaults() -> None:
     """Register built-in adapters. Called at import time."""
     from forgekits.adapters.anthropic import AnthropicAdapter
+    from forgekits.adapters.claudecode import ClaudeCodeAdapter
 
     register_adapter("anthropic", AnthropicAdapter)
+    register_adapter("claudecode", ClaudeCodeAdapter)
 
 
 # Auto-register defaults on import
